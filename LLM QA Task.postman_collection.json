@@ -1,0 +1,637 @@
+{
+	"info": {
+		"_postman_id": "c1300efd-c9f3-46ce-ab18-809a4375b3cd",
+		"name": "LLM QA Task",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43222653"
+	},
+	"item": [
+		{
+			"name": "Eiffel Tower Question",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();\r",
+							"let modelText = jsonData?.candidates?.[0]?.content?.parts?.[0]?.text;\r",
+							"if (modelText) {\r",
+							"    pm.collectionVariables.set(\"model_response\", modelText);\r",
+							"    console.log(\" model_response stored in collection variable:\", modelText);\r",
+							"} else {\r",
+							"    console.log(\"❌ model_response not found. Full response:\", pm.response.text());\r",
+							"}\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-goog-api-key",
+						"value": "AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"contents\": [\r\n      {\r\n        \"parts\": [\r\n          {\r\n            \"text\": \"Which city is the capital of the country where the Eiffel Tower is located?\"\r\n          }\r\n        ]\r\n      }\r\n    ]\r\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU",
+					"protocol": "https",
+					"host": [
+						"generativelanguage",
+						"googleapis",
+						"com"
+					],
+					"path": [
+						"v1beta",
+						"models",
+						"gemini-2.5-flash:generateContent"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl \"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent\" \\\r\n  -H 'Content-Type: application/json' \\\r\n  -H \"x-goog-api-key: YOUR_API_KEY\" \\\r\n  -X POST \\\r\n  -d '{\r\n    \"contents\": [\r\n      {\r\n        \"parts\": [\r\n          {\r\n            \"text\": \"Explain how AI works in a few words\"\r\n          }\r\n        ]\r\n      }\r\n    ]\r\n  }'"
+			},
+			"response": []
+		},
+		{
+			"name": "Eiffel Tower Question Evaluator",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();\r",
+							"let evaluation = jsonData?.candidates?.[0]?.content?.parts?.[0]?.text.toLowerCase();\r",
+							"pm.collectionVariables.set('evaluation_result', evaluation);\r",
+							"console.log('Evaluation Result:', evaluation);\r",
+							"if (evaluation.includes('correct')) {\r",
+							"    pm.test('LLM Evaluation: PASS', function () { pm.expect(true).to.be.true; });\r",
+							"} else {\r",
+							"    pm.test('LLM Evaluation: FAIL', function () { pm.expect(true).to.be.false; });\r",
+							"}\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-goog-api-key",
+						"value": "AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"contents\": [\r\n    {\r\n      \"parts\": [\r\n        {\r\n          \"text\": \"You are an evaluator AI.\\nCompare the following:\\n\\nPrompt: \\\"Which city is the capital of France?\\\"\\nModel Response: \\\"{{model_response}}\\\"\\nExpected Answer: \\\"Paris\\\"\\n\\nReturn ONLY one word: Correct or Incorrect.\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU",
+					"protocol": "https",
+					"host": [
+						"generativelanguage",
+						"googleapis",
+						"com"
+					],
+					"path": [
+						"v1beta",
+						"models",
+						"gemini-2.5-flash:generateContent"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl \"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent\" \\\r\n  -H 'Content-Type: application/json' \\\r\n  -H \"x-goog-api-key: YOUR_API_KEY\" \\\r\n  -X POST \\\r\n  -d '{\r\n    \"contents\": [\r\n      {\r\n        \"parts\": [\r\n          {\r\n            \"text\": \"Explain how AI works in a few words\"\r\n          }\r\n        ]\r\n      }\r\n    ]\r\n  }'"
+			},
+			"response": []
+		},
+		{
+			"name": "Animal Story",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();\r",
+							"let modelText = jsonData?.candidates?.[0]?.content?.parts?.[0]?.text;\r",
+							"\r",
+							"if(modelText) {\r",
+							"    modelText = modelText.replace(/\"/g, '\\\\\"');\r",
+							"    pm.collectionVariables.set(\"model_response\", modelText);\r",
+							"}\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-goog-api-key",
+						"value": "AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"contents\": [\r\n      {\r\n        \"parts\": [\r\n          {\r\n            \"text\": \"Tell me a story of an animal that has ears in shape of atriangle and does meow.\"\r\n          }\r\n        ]\r\n      }\r\n    ]\r\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU",
+					"protocol": "https",
+					"host": [
+						"generativelanguage",
+						"googleapis",
+						"com"
+					],
+					"path": [
+						"v1beta",
+						"models",
+						"gemini-2.5-flash:generateContent"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl \"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent\" \\\r\n  -H 'Content-Type: application/json' \\\r\n  -H \"x-goog-api-key: YOUR_API_KEY\" \\\r\n  -X POST \\\r\n  -d '{\r\n    \"contents\": [\r\n      {\r\n        \"parts\": [\r\n          {\r\n            \"text\": \"Explain how AI works in a few words\"\r\n          }\r\n        ]\r\n      }\r\n    ]\r\n  }'"
+			},
+			"response": []
+		},
+		{
+			"name": "Animal Story Evaluator",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();\r",
+							"let evaluation = jsonData?.candidates?.[0]?.content?.parts?.[0]?.text.toLowerCase();\r",
+							"pm.collectionVariables.set('evaluation_result', evaluation);\r",
+							"console.log('Evaluation Result:', evaluation);\r",
+							"if (evaluation.includes('correct')) {\r",
+							"    pm.test('LLM Evaluation: PASS', function () { pm.expect(true).to.be.true; });\r",
+							"} else {\r",
+							"    pm.test('LLM Evaluation: FAIL', function () { pm.expect(true).to.be.false; });\r",
+							"}\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-goog-api-key",
+						"value": "AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"contents\": [\r\n    {\r\n      \"parts\": [\r\n        {\r\n          \"text\": \"You are an evaluator AI.\\nCompare the following:\\n\\nPrompt: \\\"Task: Check if the model response describes a cat. The story may use words like cat, kitty, feline or describe its features such as triangular ears or meows.\\\"\\nModel Response: \\\"{{model_response}}\\\"\\nExpected Answer: \\\"Return ONLY 'Correct' if it describes a cat, otherwise 'Incorrect'.\\\"\\n\\nReturn ONLY one word: Correct or Incorrect.\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU",
+					"protocol": "https",
+					"host": [
+						"generativelanguage",
+						"googleapis",
+						"com"
+					],
+					"path": [
+						"v1beta",
+						"models",
+						"gemini-2.5-flash:generateContent"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl \"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent\" \\\r\n  -H 'Content-Type: application/json' \\\r\n  -H \"x-goog-api-key: YOUR_API_KEY\" \\\r\n  -X POST \\\r\n  -d '{\r\n    \"contents\": [\r\n      {\r\n        \"parts\": [\r\n          {\r\n            \"text\": \"Explain how AI works in a few words\"\r\n          }\r\n        ]\r\n      }\r\n    ]\r\n  }'"
+			},
+			"response": []
+		},
+		{
+			"name": "Romeo and Juliet",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();\r",
+							"let modelText = jsonData?.candidates?.[0]?.content?.parts?.[0]?.text;\r",
+							"if(modelText) {\r",
+							"    pm.collectionVariables.set(\"model_response\", modelText);\r",
+							"}\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-goog-api-key",
+						"value": "AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"contents\": [\r\n      {\r\n        \"parts\": [\r\n          {\r\n            \"text\": \"Who wrote the play Romeo and Juliet?\"\r\n          }\r\n        ]\r\n      }\r\n    ]\r\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU",
+					"protocol": "https",
+					"host": [
+						"generativelanguage",
+						"googleapis",
+						"com"
+					],
+					"path": [
+						"v1beta",
+						"models",
+						"gemini-2.5-flash:generateContent"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl \"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent\" \\\r\n  -H 'Content-Type: application/json' \\\r\n  -H \"x-goog-api-key: YOUR_API_KEY\" \\\r\n  -X POST \\\r\n  -d '{\r\n    \"contents\": [\r\n      {\r\n        \"parts\": [\r\n          {\r\n            \"text\": \"Explain how AI works in a few words\"\r\n          }\r\n        ]\r\n      }\r\n    ]\r\n  }'"
+			},
+			"response": []
+		},
+		{
+			"name": "Romeo and Juliet Evaluator",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();\r",
+							"let evalText = jsonData?.candidates?.[0]?.content?.parts?.[0]?.text.toLowerCase() || \"\";\r",
+							"let evaluation = evalText.includes(\"correct\") ? \"correct\" : \"incorrect\";\r",
+							"pm.collectionVariables.set(\"evaluation_result\", evaluation);\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-goog-api-key",
+						"value": "AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"contents\": [\r\n    {\r\n      \"parts\": [\r\n        {\r\n          \"text\": \"You are an evaluator AI. Task: Check if the model response correctly answers the question: 'Who wrote the play Romeo and Juliet?'. Return ONLY 'Correct' if it mentions Shakespeare, otherwise 'Incorrect'. Model Response: \\\"{{model_response}}\\\"\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU",
+					"protocol": "https",
+					"host": [
+						"generativelanguage",
+						"googleapis",
+						"com"
+					],
+					"path": [
+						"v1beta",
+						"models",
+						"gemini-2.5-flash:generateContent"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl \"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent\" \\\r\n  -H 'Content-Type: application/json' \\\r\n  -H \"x-goog-api-key: YOUR_API_KEY\" \\\r\n  -X POST \\\r\n  -d '{\r\n    \"contents\": [\r\n      {\r\n        \"parts\": [\r\n          {\r\n            \"text\": \"Explain how AI works in a few words\"\r\n          }\r\n        ]\r\n      }\r\n    ]\r\n  }'"
+			},
+			"response": []
+		},
+		{
+			"name": "Math Question",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();\r",
+							"let modelText = jsonData?.candidates?.[0]?.content?.parts?.[0]?.text;\r",
+							"if (modelText) {\r",
+							"    pm.collectionVariables.set(\"model_response\", modelText);\r",
+							"    console.log(\" model_response stored in collection variable:\", modelText);\r",
+							"} else {\r",
+							"    console.log(\"❌ model_response not found. Full response:\", pm.response.text());\r",
+							"}\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-goog-api-key",
+						"value": "AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"contents\": [\r\n      {\r\n        \"parts\": [\r\n          {\r\n            \"text\": \"If a car travels 60 km in one hour, how far does it travel in 3 hours?\"\r\n          }\r\n        ]\r\n      }\r\n    ]\r\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU",
+					"protocol": "https",
+					"host": [
+						"generativelanguage",
+						"googleapis",
+						"com"
+					],
+					"path": [
+						"v1beta",
+						"models",
+						"gemini-2.5-flash:generateContent"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl \"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent\" \\\r\n  -H 'Content-Type: application/json' \\\r\n  -H \"x-goog-api-key: YOUR_API_KEY\" \\\r\n  -X POST \\\r\n  -d '{\r\n    \"contents\": [\r\n      {\r\n        \"parts\": [\r\n          {\r\n            \"text\": \"Explain how AI works in a few words\"\r\n          }\r\n        ]\r\n      }\r\n    ]\r\n  }'"
+			},
+			"response": []
+		},
+		{
+			"name": "Math Question Evaluator",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();\r",
+							"let evalText = jsonData?.candidates?.[0]?.content?.parts?.[0]?.text.toLowerCase() || \"\";\r",
+							"let evaluation = evalText.includes(\"correct\") ? \"correct\" : \"incorrect\";\r",
+							"pm.collectionVariables.set(\"evaluation_result\", evaluation);\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-goog-api-key",
+						"value": "AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"contents\": [\r\n    {\r\n      \"parts\": [\r\n        {\r\n          \"text\": \"You are an evaluator AI.\\nCompare the following:\\n\\nPrompt: \\\"If a car travels 60 km in one hour, how far does it travel in 3 hours?\\\"\\nModel Response: \\\"{{model_response}}\\\"\\nExpected Answer: \\\"Return ONLY 'Correct' if the model calculates 180 km, otherwise 'Incorrect'.\\\"\\n\\nReturn ONLY one word: Correct or Incorrect.\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU",
+					"protocol": "https",
+					"host": [
+						"generativelanguage",
+						"googleapis",
+						"com"
+					],
+					"path": [
+						"v1beta",
+						"models",
+						"gemini-2.5-flash:generateContent"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "AIzaSyA7cmUGQIZ03_8VCeLvklM2HGdm-UJvnIU"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl \"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent\" \\\r\n  -H 'Content-Type: application/json' \\\r\n  -H \"x-goog-api-key: YOUR_API_KEY\" \\\r\n  -X POST \\\r\n  -d '{\r\n    \"contents\": [\r\n      {\r\n        \"parts\": [\r\n          {\r\n            \"text\": \"Explain how AI works in a few words\"\r\n          }\r\n        ]\r\n      }\r\n    ]\r\n  }'"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseurl",
+			"value": ""
+		},
+		{
+			"key": "gemini-model",
+			"value": ""
+		},
+		{
+			"key": "GEMINI_API_KEY",
+			"value": ""
+		},
+		{
+			"key": "model_response",
+			"value": ""
+		},
+		{
+			"key": "evaluation_result",
+			"value": ""
+		}
+	]
+}

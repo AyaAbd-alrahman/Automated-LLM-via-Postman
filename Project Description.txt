@@ -1,0 +1,138 @@
+⭐ Project Description — LLM QA Automation using Postman & Gemini API
+
+This project demonstrates a fully automated workflow for testing, evaluating, and validating Large Language Model (LLM) responses using Postman, Google Gemini API, and Postman Monitors. The goal is to ensure that LLM-generated content is correct, consistent, and aligned with predefined expectations through automated test cases and evaluator models.
+
+🚀 Overview
+
+The system automates the process of:
+
+Sending prompts to the Google Gemini LLM model.
+
+Collecting the model’s responses.
+
+Evaluating the correctness of each response using a second LLM (Evaluator Model).
+
+Running test collections automatically through Postman Monitors.
+
+Reporting results with pass/fail outcomes in real time.
+
+This approach removes manual evaluation effort and transforms LLM quality assurance into a structured, repeatable, and scalable process.
+
+🔧 Key Components
+🧪 1. LLM Query Endpoints
+
+Each test case sends a prompt to the Gemini model using the generateContent endpoint.
+Examples include:
+
+General knowledge questions
+
+Story generation
+
+Math reasoning
+
+Domain-specific tasks
+The model response is extracted and stored dynamically for later evaluation.
+
+🧩 2. LLM-Based Evaluators
+
+Instead of using fixed scripts or hard-coded logic, the evaluation is done by a second LLM, which:
+
+Receives the original prompt
+
+Receives the model’s response
+
+Compares them
+
+Outputs only “Correct” or “Incorrect”
+
+This makes the evaluation more flexible and closer to human reasoning.
+
+🔁 3. Postman Test Scripts
+
+JavaScript test scripts run automatically to:
+
+Parse Gemini responses
+
+Extract model output
+
+Inject it into evaluator requests
+
+Assert evaluator decisions
+
+Mark tests as passed/failed
+
+📡 4. Environment Variables
+
+Postman environments store:
+
+API key
+
+Base URL
+
+Model name
+
+Extracted model_response
+This ensures clean and reusable test collections.
+
+📊 5. Monitoring & Automation
+
+A Postman Monitor executes the entire collection on a schedule (hourly, daily, etc.) and:
+
+Executes all test cases
+
+Runs evaluator validations
+
+Generates a pass/fail summary
+
+Sends alerts when something breaks
+This provides continuous QA for LLM behavior.
+
+🧠 Project Workflow
+
+User prompt → Gemini model
+
+Gemini generates model response
+
+Response saved as environment variable (model_response)
+
+Evaluator request sent with:
+
+Original prompt
+
+Expected logic
+
+model_response
+
+Evaluator returns “Correct” or “Incorrect”
+
+Postman test marks test case as PASS or FAIL
+
+Monitor runs everything automatically and logs results
+
+🛠️ Tools & Technologies Used
+
+Postman (Collections, Environments, Tests, and Monitors)
+
+Google Gemini API (v1beta)
+
+JavaScript test scripts
+
+LLM-based logic evaluation
+
+Automated QA systems
+
+📘 Use Cases
+
+Automated LLM quality assurance
+
+Evaluation of model reasoning
+
+Accuracy testing for generated text
+
+Scenario-based LLM validation
+
+Monitoring LLM reliability over time
+
+⭐ Outcome
+
+This project builds a complete LLM QA automation framework, enabling reliable, scalable, and fully automated validation for any LLM task. It’s highly extendable and can support additional prompts, evaluators, and models with minimal configuration.
